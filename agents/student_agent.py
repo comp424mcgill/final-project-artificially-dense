@@ -20,6 +20,15 @@ class StudentAgent(Agent):
             "d": 2,
             "l": 3,
         }
+        self.autoplay = True
+        self.step_count = 0
+
+    def set_barrier(self, r, c, direction_given):
+        # Set the barrier to True
+        self.chess_board[r, c, direction_given] = True
+        # Set the opposite barrier to True
+        move = self.moves[direction_given]
+        self.chess_board[r + move[0], c + move[1], self.opposites[direction_given]] = True
 
     def step(self, chess_board, my_pos, adv_pos, max_step):
         """
@@ -36,5 +45,11 @@ class StudentAgent(Agent):
 
         Please check the sample implementation in agents/random_agent.py or agents/human_agent.py for more details.
         """
+        # check if agent is allowed to put a barrier there, if not, choose another direction
+        cur_x, cur_y = my_pos
+        if not self.set_barrier(cur_x, cur_y, dir):
+            self.set_barrier(cur_x, cur_y, dir)
+
+
         # dummy return
         return my_pos, self.dir_map["u"]
