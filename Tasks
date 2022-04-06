@@ -1,2 +1,8 @@
 1. Have minimax algorithm implemented with basic heuristic
+1.1 Or mcst?
 2. Think of other heuristics
+
+
+Extra ideas:
+1. Identify the opponent's strategy (most likely minimax, minimax with ab pruning, or mcst by testing for e.g. 3 rounds,
+and use counter strategies
