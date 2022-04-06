@@ -34,3 +34,5 @@ class Agent:
             The direction of the agent, as defined in world.py (DIRECTION_UP/DIRECTION_DOWN/DIRECTION_LEFT/DIRECTION_RIGHT).
         """
         pass
+
+
