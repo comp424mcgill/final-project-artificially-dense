@@ -1,5 +1,8 @@
 1. Have minimax algorithm implemented with basic heuristic
 1.1 Or mcst?
+1.1.1 Good for large states spaces
+1.1.1 Have some heuristics about what is more likely to be a better move to try out before randomly selecting an action
+(i.e. have representative sample actions)
 2. Think of other heuristics
 
 
