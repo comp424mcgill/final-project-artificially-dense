@@ -109,20 +109,20 @@ class StudentAgent(Agent):
 
         Please check the sample implementation in agents/random_agent.py or agents/human_agent.py for more details.
         """
-        # check if agent is allowed to put a barrier there, if not, choose another direction
 
-        # move = random_move(self, chess_board, my_pos, adv_pos, max_step)
+        number_rand_actions = 8  # can change
+        number_rand_trials = 8  # can change
 
-        print(chess_board)
-        print(my_pos)
-        print(adv_pos)
-        print(max_step)
-        all = self.all_moves(chess_board, my_pos, adv_pos, max_step)
-        print(all)
-        x = next(iter(all))
-        print(x)
-        f, s = x
-        print(f)
-        print(s)
-        return f, s
+        highest_prob = 0
+        highest_prob_action = (0, 0), 0
 
+        for rand_action in range(number_rand_actions):
+            sum = 0
+            rand_move = random_move(self, chess_board, my_pos, adv_pos, max_step)
+            for rand_trial in range(number_rand_trials):
+                sum += mcts()
+            if sum / number_rand_trials > highest_prob:
+                highest_prob_action = rand_move
+
+        return highest_prob_action
+        return (0, 0), 1
