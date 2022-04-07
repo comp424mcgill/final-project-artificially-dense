@@ -54,26 +54,25 @@ class StudentAgent(Agent):
         s.add(my_pos)
         cur_step += 1
 
-        # Move left
-        if not chess_board[my_x, my_y, 3]:
-            if not ((my_x - 1 == ad_x) and (my_y == ad_y)):
-                if (my_x - 1, my_y) not in s:
-                    self.all_positions(chess_board, (my_x - 1, my_y), adv_pos, max_step, cur_step, s)
-        # Move right
-        if not chess_board[my_x, my_y, 1]:
-            if not ((my_x + 1 == ad_x) and (my_y == ad_y)):
-                if (my_x + 1, my_y) not in s:
-                    self.all_positions(chess_board, (my_x + 1, my_y), adv_pos, max_step, cur_step, s)
         # Move up
         if not chess_board[my_x, my_y, 0]:
-            if not ((my_x == ad_x) and (my_y + 1 == ad_y)):
-                if (my_x, my_y + 1) not in s:
-                    self.all_positions(chess_board, (my_x, my_y + 1), adv_pos, max_step, cur_step, s)
+            if not ((my_x - 1 == ad_x) and (my_y == ad_y)):
+                self.all_positions(chess_board, (my_x - 1, my_y), adv_pos, max_step, cur_step, s)
+
         # Move down
         if not chess_board[my_x, my_y, 2]:
+            if not ((my_x + 1 == ad_x) and (my_y == ad_y)):
+                self.all_positions(chess_board, (my_x + 1, my_y), adv_pos, max_step, cur_step, s)
+
+        # Move right
+        if not chess_board[my_x, my_y, 1]:
+            if not ((my_x == ad_x) and (my_y + 1 == ad_y)):
+                self.all_positions(chess_board, (my_x, my_y + 1), adv_pos, max_step, cur_step, s)
+
+        # Move left
+        if not chess_board[my_x, my_y, 3]:
             if not ((my_x == ad_x) and (my_y - 1 == ad_y)):
-                if (my_x, my_y - 1) not in s:
-                    self.all_positions(chess_board, (my_x, my_y - 1), adv_pos, max_step, cur_step, s)
+                self.all_positions(chess_board, (my_x, my_y - 1), adv_pos, max_step, cur_step, s)
 
         return s
 
@@ -82,6 +81,7 @@ class StudentAgent(Agent):
         Output:
         - a set of possible next moves. (O(1) with no repetitions)
         """
+        # print(max_step)
         s = set()  # To store the positions
         all_p = self.all_positions(chess_board, my_pos, adv_pos, max_step, 0, s)  # Get all positions
 
@@ -125,5 +125,4 @@ class StudentAgent(Agent):
         print(f)
         print(s)
         return f, s
-
 
