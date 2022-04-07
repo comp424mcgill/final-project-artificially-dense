@@ -27,12 +27,12 @@ class MonteCarloSearchTree:
         self.actions_not_tried = None
         self.actions_not_tried = self.actions_not_tried
 
-    #def untried(self):
+    def untried(self):
+        """
+        Gets an untried move that can be made from our current state and associate them to all the actions that were not tried yet.
         #"""
-        #Gets all the possible moves that can be made from our current state and associate them to all the actions that were not tried yet.
-        #"""
-        #self.actions_not_tried = self.board_state.get_a_move()
-        #return self.actions_not_tried
+        self.actions_not_tried = self.chess_board.random_move()
+        return self.actions_not_tried
 
     def expand(self):
         """
@@ -73,19 +73,20 @@ class MonteCarloSearchTree:
         barrier_direction = ("l", "u", "r", "d")
         steps = random.randint(0, max_step + 1)
 
-        # randomly generating a random number of steps
-        for i in range(steps):
-            # generate a random move
-            move = random.choice(moves)
-            barrier = random.choice(barrier_direction)
-
-            my_new_pos = my_pos + move*i
-            row_new, col_new = my_new_pos
-            # if there is already a barrier at the new position
-            if chess_board[row_new, col_new, barrier]:
+        while self.is_valid():
+            # randomly generating a random number of steps
+            for i in range(steps):
+                # generate a random move
+                move = random.choice(moves)
                 barrier = random.choice(barrier_direction)
 
-            return my_new_pos, barrier
+                my_new_pos = my_pos + move*i
+                row_new, col_new = my_new_pos
+                # if there is already a barrier at the new position
+                if chess_board[row_new, col_new, barrier]:
+                    barrier = random.choice(barrier_direction)
+
+                return my_new_pos, barrier
 
     def is_valid(self, cur_pos, end_pos, dir_barrier):
         """
@@ -107,5 +108,32 @@ class MonteCarloSearchTree:
         if np.array_equal(cur_pos, end_pos):
             return True
 
+        # Get position of the adversary
+        adv_pos = self.p0_pos if self.turn else self.p1_pos
+
+        # BFS
+        state_queue = [(cur_pos, 0)]
+        visited = {tuple(cur_pos)}
+        is_reached = False
+        while state_queue and not is_reached:
+            cur_pos, cur_step = state_queue.pop(0)
+            r, c = cur_pos
+            if cur_step == self.max_step:
+                break
+            for dir, move in enumerate(self.moves):
+                if self.chess_board[r, c, dir]:
+                    continue
+
+                next_pos = cur_pos + move
+                if np.array_equal(next_pos, adv_pos) or tuple(next_pos) in visited:
+                    continue
+                if np.array_equal(next_pos, end_pos):
+                    is_reached = True
+                    break
+
+                visited.add(tuple(next_pos))
+                state_queue.append((next_pos, cur_step + 1))
+
+        return is_reached
 
 

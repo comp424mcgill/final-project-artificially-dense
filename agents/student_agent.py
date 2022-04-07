@@ -114,6 +114,9 @@ class StudentAgent(Agent):
         # move = random_move(self, chess_board, my_pos, adv_pos, max_step)
 
         print(chess_board)
+        print(my_pos)
+        print(adv_pos)
+        print(max_step)
         all = self.all_moves(chess_board, my_pos, adv_pos, max_step)
         print(all)
         x = next(iter(all))
