@@ -9,3 +9,19 @@
 Extra ideas:
 1. Identify the opponent's strategy (most likely minimax, minimax with ab pruning, or mcst by testing for e.g. 3 rounds,
 and use counter strategies
+
+
+Class student agent
+
+calls
+Class student world
+Input: From student agent class, initialize a world with the given board, our position, opponent position, max step
+Output: In this world, run the mcts algorithm on the given board once and get a win or lose value while keeping track of the graph at each iteration
+
+
+calls
+
+Class student minimax - alpha beta pruning
+Input: From student world class, initialize a world with the given board, our position, opponent position, max step
+Output: In student minimax, run the minimax algorithm on the given board and get the action with the highest utility
+
