@@ -3,6 +3,7 @@ from agents.agent import Agent
 from store import register_agent
 import sys
 from copy import deepcopy
+from student_minimax import student_minimax
 
 
 @register_agent("student_agent")
@@ -49,7 +50,7 @@ class StudentAgent(Agent):
             ori_pos = deepcopy(my_pos)
             sum = 0
             (rand_x, rand_y), direction = self.random_move(ori_board, ori_pos, adv_pos, max_step)
-            ori_board[rand_x, rand_y, direction] = true
+            ori_board[rand_x, rand_y, direction] = True
             for _ in range(number_rand_trials):
                 sum += mcts(ori_board, (rand_x, rand_y), adv_pos, max_step - 1)
             if sum / number_rand_trials > highest_prob:

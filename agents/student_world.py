@@ -11,13 +11,7 @@ import sys
 
 
 class StudentWorld:
-    def __init__(
-            self,
-            board=board,
-            our_position=position1,
-            adv_position=position2,
-            max_step=max_step,
-    ):
+    def __init__(self, board, our_position, adv_position, max_step):
         """
         Initialize the world to the board given
         """
@@ -288,6 +282,7 @@ class StudentWorld:
             # If there's a wall or there's an adversary at the new place, change step
             while self.chess_board[my_x, my_y, rand_step] or my_pos == adv_pos:
                 k += 1
+                # terminating condition
                 if k > 300:
                     break
                 rand_step = np.random.randint(0, 4)

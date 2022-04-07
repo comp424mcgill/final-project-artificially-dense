@@ -3,14 +3,14 @@ from collections import defaultdict
 from numpy import random
 
 
-class MonteCarloSearchTree:
+class StudentMinimax:
     def __init__(self, board_state, parent=None, parent_action=None):
         """
         Initializing every variable we need for the implementation of MCST.
 
         Parameters
         ----------
-        chess_board: tuple of the size of the board MXM
+        chess_board: tuple of the size of the board MxM
         parent: starting configuration of the game
         parent_action: the move chosen for a specific state of the game
 
@@ -30,7 +30,7 @@ class MonteCarloSearchTree:
     def untried(self):
         """
         Gets an untried move that can be made from our current state and associate them to all the actions that were not tried yet.
-        #"""
+        """
         self.actions_not_tried = self.chess_board.random_move()
         return self.actions_not_tried
 
