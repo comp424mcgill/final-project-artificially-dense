@@ -2,6 +2,7 @@
 from agents.agent import Agent
 from store import register_agent
 import sys
+from copy import deepcopy
 
 
 @register_agent("student_agent")
@@ -117,10 +118,12 @@ class StudentAgent(Agent):
         highest_prob_action = (0, 0), 0
 
         for rand_action in range(number_rand_actions):
+            ori_board = deepcopy(chess_board)
             sum = 0
-            rand_move = random_move(self, chess_board, my_pos, adv_pos, max_step)
+            (rand_x, rand_y), direction = random_move(self, chess_board, my_pos, adv_pos, max_step)
+            ori_board[rand_x, rand_y, direction] = true
             for rand_trial in range(number_rand_trials):
-                sum += mcts()
+                sum += mcts(ori_board, (rand_x, rand_y), adv_pos, max_step - 1)
             if sum / number_rand_trials > highest_prob:
                 highest_prob_action = rand_move
 
