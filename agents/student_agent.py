@@ -95,6 +95,46 @@ class StudentAgent(Agent):
 
         return moves
 
+    def random_move(self, chess_board, my_pos, adv_pos, max_step):
+        """
+        Output:
+        - a random move from the current position
+        """
+        # Moves (Up, Right, Down, Left)
+        ori_pos = deepcopy(my_pos)
+        moves = ((-1, 0), (0, 1), (1, 0), (0, -1))
+        steps = np.random.randint(0, max_step + 1)  # a random number of steps
+
+        # Random Walk
+        for _ in range(steps):
+            my_x, my_y = my_pos
+            rand_step = np.random.randint(0, 4)
+            rand_step_x, rand_step_y = moves[rand_step]
+            my_pos = (my_x + rand_step_x, my_y + rand_step_y)
+
+            # Special Case enclosed by Adversary
+            k = 0
+            # If there's a wall or there's an adversary at the new place, change step
+            while chess_board[my_x, my_y, rand_step] or my_pos == adv_pos:
+                k += 1
+                if k > 300:
+                    break
+                rand_step = np.random.randint(0, 4)
+                rand_step_x, rand_step_y = moves[rand_step]
+                my_pos = (my_x + rand_step_x, my_y + rand_step_y)
+
+            if k > 300:
+                my_pos = ori_pos
+                break
+
+        # Put Barrier
+        rand_wall = np.random.randint(0, 4)
+        my_x, my_y = my_pos
+        while chess_board[my_x, my_y, rand_wall]:
+            rand_wall = np.random.randint(0, 4)
+
+        return my_pos, rand_step
+
     def step(self, chess_board, my_pos, adv_pos, max_step):
         """
         Implement the step function of your agent here.
@@ -117,12 +157,13 @@ class StudentAgent(Agent):
         highest_prob = 0
         highest_prob_action = (0, 0), 0
 
-        for rand_action in range(number_rand_actions):
+        for _ in range(number_rand_actions):
             ori_board = deepcopy(chess_board)
+            ori_pos = deepcopy(my_pos)
             sum = 0
-            (rand_x, rand_y), direction = random_move(self, chess_board, my_pos, adv_pos, max_step)
+            (rand_x, rand_y), direction = self.random_move(ori_board, ori_pos, adv_pos, max_step)
             ori_board[rand_x, rand_y, direction] = true
-            for rand_trial in range(number_rand_trials):
+            for _ in range(number_rand_trials):
                 sum += mcts(ori_board, (rand_x, rand_y), adv_pos, max_step - 1)
             if sum / number_rand_trials > highest_prob:
                 highest_prob_action = rand_move
