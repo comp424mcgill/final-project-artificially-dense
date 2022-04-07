@@ -14,16 +14,16 @@ class StudentWorld:
     def __init__(
             self,
             board=board,
-            player_1_position=position1,
-            player_2_position=position2,
+            our_position=position1,
+            adv_position=position2,
             max_step=max_step,
     ):
         """
         Initialize the world to the board given
         """
         # Load agents as defined in decorators
-        self.p1_pos = player_1_position
-        self.p2_pos = player_2_position
+        self.our_pos = our_position
+        self.adv_pos = adv_position
 
         # Moves (Up, Right, Down, Left)
         self.moves = ((-1, 0), (0, 1), (1, 0), (0, -1))
@@ -43,6 +43,9 @@ class StudentWorld:
 
         # Check initialization
         self.initial_end, _, _ = self.check_endgame()
+
+        # Record the winner
+        self.winner = -1  # 1 being we win, 0.5 being tie, 0 being tie
 
     def get_current_player(self):
         """
@@ -113,9 +116,7 @@ class StudentWorld:
 
         # Print out each step
         # print(self.turn, next_pos, dir)
-        logger.info(
-            f"Player {self.player_names[self.turn]} moves to {next_pos} facing {self.dir_names[dir]}"
-        )
+
         if not self.turn:
             self.p0_pos = next_pos
         else:
@@ -181,20 +182,12 @@ class StudentWorld:
             return False, p0_score, p1_score
         player_win = None
         win_blocks = -1
-        if p0_score > p1_score:
-            player_win = 0
-            win_blocks = p0_score
+        if our_score > adv_score:
+            self.winner = 1
         elif p0_score < p1_score:
-            player_win = 1
-            win_blocks = p1_score
+            self.winner = 0
         else:
-            player_win = -1  # Tie
-        if player_win >= 0:
-            logging.info(
-                f"Game ends! Player {self.player_names[player_win]} wins having control over {win_blocks} blocks!"
-            )
-        else:
-            logging.info("Game ends! It is a Tie!")
+            self.winner = 0.5
         return True, p0_score, p1_score
 
     def check_boundary(self, pos):
