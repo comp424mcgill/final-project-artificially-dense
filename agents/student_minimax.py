@@ -27,12 +27,69 @@ class StudentMinimax:
         self.actions_not_tried = None
         self.actions_not_tried = self.actions_not_tried
 
-    def untried(self):
+    def all_positions(self, chess_board, my_pos, adv_pos, max_step, cur_step, s):
         """
-        Gets an untried move that can be made from our current state and associate them to all the actions that were not tried yet.
+        ** Cindy's version
+        Input:
+        - cur_step = count of step up until max_step;
+        - s = initial set;
+        - visited = set of visited position.
+        Output:
+        - a set of possible positions to land on. (O(1) with no repetitions)
         """
-        self.actions_not_tried = self.chess_board.random_move()
-        return self.actions_not_tried
+        # Reached max step so stop
+        if cur_step == max_step + 1:
+            return s
+
+        my_x, my_y = my_pos
+        ad_x, ad_y = adv_pos
+
+        if my_x < 0 or my_x >= len(chess_board) or my_y < 0 or my_y >= len(chess_board):
+            return
+
+        s.add(my_pos)
+        cur_step += 1
+
+        # Move up
+        if not chess_board[my_x, my_y, 0]:
+            if not ((my_x - 1 == ad_x) and (my_y == ad_y)):
+                self.all_positions(chess_board, (my_x - 1, my_y), adv_pos, max_step, cur_step, s)
+
+        # Move down
+        if not chess_board[my_x, my_y, 2]:
+            if not ((my_x + 1 == ad_x) and (my_y == ad_y)):
+                self.all_positions(chess_board, (my_x + 1, my_y), adv_pos, max_step, cur_step, s)
+
+        # Move right
+        if not chess_board[my_x, my_y, 1]:
+            if not ((my_x == ad_x) and (my_y + 1 == ad_y)):
+                self.all_positions(chess_board, (my_x, my_y + 1), adv_pos, max_step, cur_step, s)
+
+        # Move left
+        if not chess_board[my_x, my_y, 3]:
+            if not ((my_x == ad_x) and (my_y - 1 == ad_y)):
+                self.all_positions(chess_board, (my_x, my_y - 1), adv_pos, max_step, cur_step, s)
+
+        return s
+
+    def all_moves(self, chess_board, my_pos, adv_pos, max_step):
+        """
+        ** Cindy's version
+        Output:
+        - a set of possible next moves. (O(1) with no repetitions)
+        """
+        # print(max_step)
+        s = set()  # To store the positions
+        all_p = self.all_positions(chess_board, my_pos, adv_pos, max_step, 0, s)  # Get all positions
+
+        # Add all possible walls to the positions
+        moves = set()
+        for position in all_p:
+            for direction in range(4):
+                if not chess_board[position[0], position[1], direction]:
+                    moves.add((position, direction))
+
+        return moves
 
     def expand(self):
         """
@@ -51,89 +108,3 @@ class StudentMinimax:
 
         while not curr_state.is_endgame():
             moves_possible = curr_state.random_move()
-
-
-    def random_move(self, chess_board, my_pos, adv_pos, max_step):
-        """
-        Gets a random possible move and return it
-
-        Parameters
-        ----------
-        chess_board:
-            current state of chess_board [row, col, direction of barrier]
-        my_pos : tuple
-            position of the agent.
-        adv_pos: tuple
-            position of opponent
-        max_step : int
-            maximum number of steps allowed.
-        """
-        # left, up, right, down
-        moves = ((-1, 0), (0, 1), (1, 0), (0, -1))
-        barrier_direction = ("l", "u", "r", "d")
-        steps = random.randint(0, max_step + 1)
-
-        while self.is_valid():
-            # randomly generating a random number of steps
-            for i in range(steps):
-                # generate a random move
-                move = random.choice(moves)
-                barrier = random.choice(barrier_direction)
-
-                my_new_pos = my_pos + move*i
-                row_new, col_new = my_new_pos
-                # if there is already a barrier at the new position
-                if chess_board[row_new, col_new, barrier]:
-                    barrier = random.choice(barrier_direction)
-
-                return my_new_pos, barrier
-
-    def is_valid(self, cur_pos, end_pos, dir_barrier):
-        """
-        Checks if a certain step is valid
-
-        Parameters
-        ----------
-        cur_pos : tuple
-            position of the agent right now.
-        end_pos: tuple
-            position of the agent after a move
-        dir_barrier : int
-            The direction of the barrier.
-        """
-
-        new_row, new_col = end_pos
-        if self.chess_board[new_row, new_col, dir_barrier]:
-            return False
-        if np.array_equal(cur_pos, end_pos):
-            return True
-
-        # Get position of the adversary
-        adv_pos = self.p0_pos if self.turn else self.p1_pos
-
-        # BFS
-        state_queue = [(cur_pos, 0)]
-        visited = {tuple(cur_pos)}
-        is_reached = False
-        while state_queue and not is_reached:
-            cur_pos, cur_step = state_queue.pop(0)
-            r, c = cur_pos
-            if cur_step == self.max_step:
-                break
-            for dir, move in enumerate(self.moves):
-                if self.chess_board[r, c, dir]:
-                    continue
-
-                next_pos = cur_pos + move
-                if np.array_equal(next_pos, adv_pos) or tuple(next_pos) in visited:
-                    continue
-                if np.array_equal(next_pos, end_pos):
-                    is_reached = True
-                    break
-
-                visited.add(tuple(next_pos))
-                state_queue.append((next_pos, cur_step + 1))
-
-        return is_reached
-
-
