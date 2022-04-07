@@ -4,18 +4,18 @@ from numpy import random
 
 
 class MonteCarloSearchTree:
-    def __init__(self, chess_board, parent=None, parent_action=None):
+    def __init__(self, board_state, parent=None, parent_action=None):
         """
         Initializing every variable we need for the implementation of MCST.
 
         Parameters
         ----------
-        board_state: tuple of the size of the board MXM
+        chess_board: tuple of the size of the board MXM
         parent: starting configuration of the game
         parent_action: the move chosen for a specific state of the game
 
         """
-        self.chess_board = chess_board
+        self.board_state = board_state
         self.parent = parent
         self.parent_action = parent_action
         self.children = defaultdict(list)
