@@ -3,7 +3,7 @@ from agents.agent import Agent
 from store import register_agent
 import sys
 from copy import deepcopy
-from student_minimax import student_minimax
+from student_minimax import StudentMinimax
 
 
 @register_agent("student_agent")
