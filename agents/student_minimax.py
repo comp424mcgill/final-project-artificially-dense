@@ -159,14 +159,14 @@ class StudentMinimax:
         else:
             return self.adv_agent, self.adv_pos, self.my_pos
 
-    def minimax(self, move):
+    def minimax_value(self):
         """
-        Minimax algorithm implementation
+        This is the value part of the minimax algorithm which returns a certain value for each move
         """
 
         # if the game is over, return the scores
         # so 1 for win, 0.5 for tie, 0 for loss
-        result, my_score, adv_score = move.is_end()
+        result, my_score, adv_score = self.is_end()
         if result and my_score > adv_score:
             return self.scores["win"]
         if result and my_score == adv_score:
@@ -174,11 +174,29 @@ class StudentMinimax:
         if result and my_score < adv_score:
             return self.scores["loss"]
 
-        # if the game is not over
-        if not result:
-            player_info = self.get_current_player()
-            player, cur_player_pos, adv_player_pos = player_info
-            if player.equals("my_agent"):
-                for m in player.all_moves():
-                    new_pos, new_dir = m
+        player_info = self.get_current_player()
+        player, cur_player_pos, adv_player_pos = player_info
+        for m in player.all_moves():
+            res, m_my_score, m_adv_score = m.is_end()
+            if not res:
+                value = m.minimax_value()
+        if player.equals("my agent"):
+            max_value = max(value)
+            return max_value
+        if player.equals("adversary agent"):
+            min_value = min(value)
+            return min_value
 
+    def minimax(self):
+        """
+        This is the decision part of the minimax algorithm, where it decides which path is the best
+        and returns it.
+        """
+        threshold = 0
+        for m in self.all_moves():
+            new_pos, new_dir = m
+            self.chess_board = self.chess_board(new_pos[0], new_pos[1], new_dir)
+            value = self.minimax_value()
+            if value > threshold:
+                threshold = value
+            return m
