@@ -79,13 +79,11 @@ class StudentMinimax:
 
         return is_reached
 
-    def all_positions(self, cur_step = 0):
+    def all_positions(self, cur_step=0):
         """
-        ** Cindy's version
         Input:
         - cur_step = count of step up until max_step;
-        - s = initial set;
-        - visited = set of visited position.
+
         Output:
         - a set of possible positions to land on. (O(1) with no repetitions)
         """
@@ -140,7 +138,6 @@ class StudentMinimax:
 
     def all_moves(self):
         """
-        ** Cindy's version
         Output:
         - a set of possible next moves. (O(1) with no repetitions)
         """
