@@ -1,4 +1,7 @@
 # Student agent: Add your own agent here
+import numpy as np
+
+import agents.student_minimax
 from agents.agent import Agent
 from store import register_agent
 import sys
@@ -67,8 +70,7 @@ class StudentAgent(Agent):
 
         return my_position, rand_wall
 
-    @staticmethod
-    def set_barrier(chess_board, x, y, dir):
+    def set_barrier(self, chess_board, x, y, dir):
         # Set the barrier to True
         chess_board[x, y, dir] = True
         # Set the opposite barrier to True
@@ -76,8 +78,7 @@ class StudentAgent(Agent):
         move = moves[dir]
         chess_board[x + move[0], y + move[1], self.opposites[dir]] = True
 
-    @staticmethod
-    def step(chess_board, my_pos, adv_pos, max_step):
+    def step(self, chess_board, my_pos, adv_pos, max_step):
         """
         Implement the step function of your agent here.
         You can use the following variables to access the chess board:
@@ -111,12 +112,16 @@ class StudentAgent(Agent):
         #         highest_prob_action = (rand_x, rand_y), direction
         #
         # return highest_prob_action
-        print("hi1")
-        exp = StudentWorld(chess_board, my_pos, adv_pos, max_step)
-        step = StudentMinimax.all_moves(4)
-        print("hi2")
-        action = exp.step
-        print("hi3")
-        print(action)
-        print("hi")
+        #print("hi1")
+        #exp = StudentWorld(chess_board, my_pos, adv_pos, max_step)
+        #print("hi2")
+        #action = exp.step
+        #print("hi3")
+        #print(action)
+        #print("hi")
+
+        board_size = chess_board[0]
+        test = StudentMinimax(board_size, my_pos, adv_pos, chess_board)
+        action = StudentMinimax.minimax(test)
+
         return action
