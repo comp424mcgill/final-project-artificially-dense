@@ -27,7 +27,7 @@ class StudentMinimax:
         self.scores["tie"] = 0.5
         self.scores["loss"] = 0
 
-    def all_positions(self, chess_board, my_pos, adv_pos, max_step, cur_step=0, s=None):
+    def all_positions(self, max_step, cur_step=0, s=None):
         """
         ** Cindy's version
         Input:
@@ -43,39 +43,39 @@ class StudentMinimax:
         if cur_step == max_step + 1:
             return s
 
-        my_x, my_y = my_pos
-        ad_x, ad_y = adv_pos
+        my_x, my_y = self.my_pos
+        ad_x, ad_y = self.adv_pos
 
         # checking if a move is valid or not
-        if my_x < 0 or my_x >= len(chess_board) or my_y < 0 or my_y >= len(chess_board):
+        if my_x < 0 or my_x >= len(self.chess_board) or my_y < 0 or my_y >= len(self.chess_board):
             return
 
-        s.add(my_pos)
+        s.add(self.my_pos)
         cur_step += 1
 
         # Move up
-        if not chess_board[my_x, my_y, 0]:
+        if not self.chess_board[my_x, my_y, 0]:
             if not ((my_x - 1 == ad_x) and (my_y == ad_y)):
-                self.all_positions(chess_board, (my_x - 1, my_y), adv_pos, max_step, cur_step, s)
+                self.all_positions(max_step, cur_step, s)
 
         # Move down
-        if not chess_board[my_x, my_y, 2]:
+        if not self.chess_board[my_x, my_y, 2]:
             if not ((my_x + 1 == ad_x) and (my_y == ad_y)):
-                self.all_positions(chess_board, (my_x + 1, my_y), adv_pos, max_step, cur_step, s)
+                self.all_positions(max_step, cur_step, s)
 
         # Move right
-        if not chess_board[my_x, my_y, 1]:
+        if not self.chess_board[my_x, my_y, 1]:
             if not ((my_x == ad_x) and (my_y + 1 == ad_y)):
-                self.all_positions(chess_board, (my_x, my_y + 1), adv_pos, max_step, cur_step, s)
+                self.all_positions(max_step, cur_step, s)
 
         # Move left
-        if not chess_board[my_x, my_y, 3]:
+        if not self.chess_board[my_x, my_y, 3]:
             if not ((my_x == ad_x) and (my_y - 1 == ad_y)):
-                self.all_positions(chess_board, (my_x, my_y - 1), adv_pos, max_step, cur_step, s)
+                self.all_positions(max_step, cur_step, s)
 
         return s
 
-    def all_moves(self, chess_board, my_pos, adv_pos, max_step):
+    def all_moves(self, max_step):
         """
         ** Cindy's version
         Output:
@@ -83,13 +83,13 @@ class StudentMinimax:
         """
         # print(max_step)
         s = set()  # To store the positions
-        all_p = self.all_positions(chess_board, my_pos, adv_pos, max_step, 0, s)  # Get all positions
+        all_p = self.all_positions(max_step, 0, s)  # Get all positions
 
         # Add all possible walls to the positions
         moves = set()
         for position in all_p:
             for direction in range(4):
-                if not chess_board[position[0], position[1], direction]:
+                if not self.chess_board[position[0], position[1], direction]:
                     moves.add((position, direction))
 
         return moves
@@ -115,7 +115,7 @@ class StudentMinimax:
 
         for r in range(m_row):
             for c in range(m_col):
-                for dir, move in enumerate(self.moves[1:3]):  # Only check down and right
+                for dir, move in enumerate(self.all_moves[1:3]):  # Only check down and right
                     if self.chess_board[r, c, dir + 1]:
                         continue
                     pos_a = find((r, c))
@@ -166,6 +166,7 @@ class StudentMinimax:
 
         # if the game is over, return the scores
         # so 1 for win, 0.5 for tie, 0 for loss
+        value = 0
         result, my_score, adv_score = self.is_end()
         if result and my_score > adv_score:
             return self.scores["win"]
@@ -193,7 +194,8 @@ class StudentMinimax:
         and returns it.
         """
         threshold = 0
-        for m in self.all_moves():
+        max_step = (self.board_state + 1) // 2
+        for m in self.all_moves(max_step):
             new_pos, new_dir = m
             self.chess_board = self.chess_board(new_pos[0], new_pos[1], new_dir)
             value = self.minimax_value()
