@@ -25,6 +25,8 @@ class StudentWorld(Agent):
         self.chess_board = board
         self.our_pos = our_position
         self.adv_pos = adv_position
+        self.max_step = max_step
+        self.chess_board_size = len(board)
 
         # Moves (Up, Right, Down, Left)
         self.moves = ((-1, 0), (0, 1), (1, 0), (0, -1))
@@ -167,8 +169,8 @@ class StudentWorld(Agent):
         """
         # Union-Find
         father = dict()
-        for pos_x in range(self.board_size):
-            for pos_y in range(self.board_size):
+        for pos_x in range(self.chess_board_size):
+            for pos_y in range(self.chess_board_size):
                 father[(pos_x, pos_y)] = (pos_x, pos_y)
 
         def find(pos):
@@ -179,8 +181,8 @@ class StudentWorld(Agent):
         def union(pos1, pos2):
             father[pos1] = pos2
 
-        for pos_x in range(self.board_size):
-            for pos_y in range(self.board_size):
+        for pos_x in range(self.chess_board_size):
+            for pos_y in range(self.chess_board_size):
                 for dir, move in enumerate(self.moves[1:3]):  # Only check down and right
                     # Check if there is a wall between current position and down/right
                     if self.chess_board[pos_x, pos_y, dir + 1]:
@@ -191,8 +193,8 @@ class StudentWorld(Agent):
                     if root_a != root_b:
                         union(root_a, root_b)
 
-        for pos_x in range(self.board_size):
-            for pos_y in range(self.board_size):
+        for pos_x in range(self.chess_board_size):
+            for pos_y in range(self.chess_board_size):
                 find((pos_x, pos_y))  # Path compression of union find
         our_r = find(tuple(self.our_pos))
         adv_r = find(tuple(self.adv_pos))
