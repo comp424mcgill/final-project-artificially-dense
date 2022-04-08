@@ -4,7 +4,6 @@ from store import register_agent
 import sys
 from copy import deepcopy
 from agents.student_world import StudentWorld
-from agents.student_minimax import StudentMinimax
 
 
 @register_agent("student_agent")
@@ -113,8 +112,6 @@ class StudentAgent(Agent):
         # return highest_prob_action
         print("hi1")
         exp = StudentWorld(chess_board, my_pos, adv_pos, max_step)
-        step = chess_board.StudentMinimax.all_moves(4)
-
         print("hi2")
         action = exp.step
         print("hi3")
