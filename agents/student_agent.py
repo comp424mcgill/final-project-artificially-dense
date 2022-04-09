@@ -1,4 +1,7 @@
 # Student agent: Add your own agent here
+import numpy as np
+
+import agents.student_minimax
 from agents.agent import Agent
 from store import register_agent
 import sys
@@ -168,6 +171,11 @@ class StudentAgent(Agent):
         Output:
         - all possible next board states
         """
+
+    def set_barrier(self, chess_board, x, y, dir):
+        # Set the barrier to True
+        chess_board[x, y, dir] = True
+        # Set the opposite barrier to True
         moves = ((-1, 0), (0, 1), (1, 0), (0, -1))
         for dir in range(4):
             # Get the neighboring position of the new_pos
@@ -180,6 +188,7 @@ class StudentAgent(Agent):
                 new_board[nei_new_pos[0], nei_new_pos[1], (dir + 2) % 4] = True
                 # Yield the direction of the current position and the new state board
                 yield dir, new_board
+
 
     def score_guess(self, chess_board, my_pos, adv_pos):
         """
@@ -266,9 +275,43 @@ class StudentAgent(Agent):
         print("===================== minimax end 5")
         return max(score_list) if minimax_step % 2 == 0 else min(score_list)  # to debug
 
+
     def step(self, chess_board, my_pos, adv_pos, max_step):
         # t1 = time.time()
         score, pos, dir = self.minimax(chess_board, my_pos, adv_pos, max_step)
         # print("final score", score)
         # print(time.time() - t1)
         return pos, dir
+
+        # number_rand_actions = 1  # can change
+        # number_rand_trials = 1  # can change
+        #
+        # highest_prob = 0
+        # highest_prob_action = (0, 0), 0
+        #
+        # for _ in range(number_rand_actions):
+        #     ori_board = deepcopy(chess_board)
+        #     ori_pos = deepcopy(my_pos)
+        #     sum = 0
+        #     (rand_x, rand_y), direction = random_move(ori_board, ori_pos, adv_pos, max_step)
+        #     ori_board[rand_x, rand_y, direction] = True
+        #     for _ in range(number_rand_trials):
+        #         sum += mcts(ori_board, (rand_x, rand_y), adv_pos, max_step - 1)
+        #     if sum / number_rand_trials > highest_prob:
+        #         highest_prob_action = (rand_x, rand_y), direction
+        #
+        # return highest_prob_action
+        #print("hi1")
+        #exp = StudentWorld(chess_board, my_pos, adv_pos, max_step)
+        #print("hi2")
+        #action = exp.step
+        #print("hi3")
+        #print(action)
+        #print("hi")
+
+        # board_size = chess_board[0]
+        # test = StudentMinimax(board_size, my_pos, adv_pos, chess_board)
+        # action = StudentMinimax.minimax(test)
+        #
+        # return action
+
