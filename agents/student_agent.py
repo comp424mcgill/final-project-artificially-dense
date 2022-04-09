@@ -3,8 +3,6 @@ from agents.agent import Agent
 from store import register_agent
 import sys
 from copy import deepcopy
-from agents.student_world import StudentWorld
-from agents.student_minimax import StudentMinimax
 import time
 
 
@@ -92,7 +90,6 @@ class StudentAgent(Agent):
         Output:
         - the difference between the cells appropriated; the highest the better for us, the lowest the better for the opponent
         """
-        # print("score guess, my_pos & adv_pos:", my_pos, adv_pos)
         adv_possible_pos = {adv_pos}
         adv_tobe_explore_list = [adv_pos]
         my_possible_pos = {my_pos}
@@ -100,10 +97,8 @@ class StudentAgent(Agent):
 
         while len(adv_tobe_explore_list) + len(my_tobe_explore_list):
             adv_tobe_explore_list_copy = adv_tobe_explore_list.copy()
-            # print("adv to be explored", adv_tobe_explore_list)
             adv_tobe_explore_list = []
             my_tobe_explore_list_copy = my_tobe_explore_list.copy()
-            # print("us to be explored", my_tobe_explore_list)
             my_tobe_explore_list = []
             for pos in adv_tobe_explore_list_copy:
                 for s in self.possible_step(chess_board, pos, my_pos):
@@ -116,8 +111,6 @@ class StudentAgent(Agent):
                         my_possible_pos |= {s}
                         my_tobe_explore_list += [s]
 
-        # print("my possible positions:", my_possible_pos)
-        # print("adv possible positions:", adv_possible_pos)
         return len(my_possible_pos) - len(adv_possible_pos)
 
     def minimax(self, chess_board, my_pos, adv_pos, max_step, minimax_step=0, minimax_step_max=1):
@@ -128,16 +121,12 @@ class StudentAgent(Agent):
         - minimax_step_max = max depth of minimax tree
         get the board with the max favorable score guess
         """
-        # print("---------------------- minimax start: my_pos:", my_pos, "adv_pos:", adv_pos, "minimax_step:", minimax_step)
+
         if minimax_step == minimax_step_max:
             if minimax_step % 2 == 0:  # to debug
                 info = self.score_guess(chess_board, my_pos, adv_pos), (0, 0), 0
-                # print(info)
-                # print("===================== minimax end 1")
                 return info # score, position, direction
             info = self.score_guess(chess_board, adv_pos, my_pos), (0, 0), 0
-            # print(info)
-            # print("===================== minimax end 2")
             return info
 
         # Get a set of reachable positions within the max step
@@ -147,32 +136,18 @@ class StudentAgent(Agent):
         # For each position that is reachable, get all possible walls, for which we compute the minimax value (i.e. the utility value of each possible state)
         for pos in possible_pos:
             for dir, new_board in self.possible_board(chess_board, pos):
-                # print(pos, dir, self.minimax(new_board, adv_pos, pos, max_step, minimax_step+1))
-                # print("direction:", dir, "position:", pos)
                 score, __, __ = self.minimax(new_board, adv_pos, pos, max_step, minimax_step + 1)
                 score_list += [(score, pos, dir)]
 
         if len(score_list) == 0:
             if minimax_step % 2 == 0:  # to debug
                 info = self.score_guess(chess_board, my_pos, adv_pos), (0, 0), 0
-                # print(info)
-                # print("===================== minimax end 3")
                 return info  # score, position, direction
             info = self.score_guess(chess_board, adv_pos, my_pos), (0, 0), 0
-            # print(info)
-            # print("===================== minimax end 4")
             return info
 
-        # print(minimax_step, [x[0] for x in score_list])
-        # print("line 238", score_list)
-        # print("line 239", max(score_list))
-        # print("line 240", min(score_list))
-        # print("===================== minimax end 5")
         return max(score_list) if minimax_step % 2 == 0 else min(score_list)  # to debug
 
     def step(self, chess_board, my_pos, adv_pos, max_step):
-        # t1 = time.time()
         score, pos, dir = self.minimax(chess_board, my_pos, adv_pos, max_step)
-        # print("final score", score)
-        # print(time.time() - t1)
         return pos, dir
