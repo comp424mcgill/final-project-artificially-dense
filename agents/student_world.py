@@ -52,7 +52,7 @@ class StudentWorld(Agent):
         # Moves (Up, Right, Down, Left)
         self.moves = ((-1, 0), (0, 1), (1, 0), (0, -1))
 
-    def step(self, chess_board, my_pos, adv_pos, max_step):
+    def step(self):
         """
         Implement the step function of your agent here.
         You can use the following variables to access the chess board:
@@ -76,12 +76,13 @@ class StudentWorld(Agent):
 
         for _ in range(number_rand_actions):
             # Start from the same original board
-            self.chess_board = deepcopy(self.board_copy)
+            self.chess_board = deepcopy(self.chess_board_copy)
             self.our_pos = deepcopy(self.our_pos_copy)
             self.adv_pos = deepcopy(self.adv_pos_copy)
             self.winner = -1
             sum = 0
             (rand_x, rand_y), direction = self.random_move(self.our_pos, self.adv_pos)
+            print("line 85, method step", (rand_x, rand_y), direction)
             ended, score1, score2 = self.check_endgame()
             if not ended:
                 for _ in range(number_rand_trials):
@@ -138,6 +139,7 @@ class StudentWorld(Agent):
             adv_position = self.our_pos
 
         our_position, dir = self.random_move(our_position, adv_position)
+        print("line 142, method increase_depth, our_position:", our_position)
 
         if self.turn:
             self.our_pos = our_position
@@ -153,6 +155,85 @@ class StudentWorld(Agent):
         self.turn = not self.turn
 
         return results
+
+    def random_move(self, my_position, adv_position):
+        """
+        ** Reedited version
+        Output:
+        - a random move from the current position
+        """
+        # print("------------------------ random walk start")
+        # print("line 234, random_move, my_position:", my_position)
+        # ori_pos = deepcopy(my_position)
+        # steps = np.random.randint(0, self.max_step)  # a random number of steps
+        #
+        # # Random Walk
+        # for _ in range(steps):
+        #     my_x, my_y = my_position
+        #     rand_step = np.random.randint(0, 4)
+        #     rand_step_x, rand_step_y = self.moves[rand_step]
+        #     print("my position before change:", my_position)
+        #     my_position = (my_x + rand_step_x, my_y + rand_step_y)
+        #     print("my position after change:", my_position)
+        #     # Special Case enclosed by Adversary
+        #     k = 0
+        #     # If there's a wall or there's an adversary at the new place, change step
+        #     print("is there a wall?", self.chess_board[my_x, my_y, rand_step])
+        #     print("is there an adversary?", my_position == adv_position)
+        #     while self.chess_board[my_x, my_y, rand_step] or my_position == adv_position:
+        #         k += 1
+        #         # terminating condition
+        #         if k > 300:
+        #             break
+        #         rand_step = np.random.randint(0, 4)
+        #         rand_step_x, rand_step_y = self.moves[rand_step]
+        #         my_position = (my_x + rand_step_x, my_y + rand_step_y)
+        #
+        #     if k > 300:
+        #         my_position = ori_pos
+        #         break
+        #     print("k value:", k)
+        #     print("my position after while loop:", my_position)
+        #
+        # # Put Barrier
+        # rand_wall = np.random.randint(0, 4)
+        # my_x, my_y = my_position
+        # print("line 263, method random_move:", my_position)
+        # while self.chess_board[my_x, my_y, rand_wall]:
+        #     rand_wall = np.random.randint(0, 4)
+        # print("======================= random walk done")
+        # return my_position, rand_wall
+
+        ori_pos = deepcopy(my_position)
+        steps = np.random.randint(0, self.max_step + 1)
+        # Random Walk
+        for _ in range(steps):
+            r, c = my_position
+            dir = np.random.randint(0, 4)
+            m_r, m_c = self.moves[dir]
+            my_position = (r + m_r, c + m_c)
+
+            # Special Case enclosed by Adversary
+            k = 0
+            while self.chess_board[r, c, dir] or my_position == adv_position:
+                k += 1
+                if k > 300:
+                    break
+                dir = np.random.randint(0, 4)
+                m_r, m_c = self.moves[dir]
+                my_position = (r + m_r, c + m_c)
+
+            if k > 300:
+                my_position = ori_pos
+                break
+
+        # Put Barrier
+        dir = np.random.randint(0, 4)
+        r, c = my_position
+        while self.chess_board[r, c, dir]:
+            dir = np.random.randint(0, 4)
+
+        return my_position, dir
 
     def check_endgame(self):
         """
@@ -208,7 +289,7 @@ class StudentWorld(Agent):
                 self.winner = 1
             else:
                 self.winner = 0
-        elif p0_score < p1_score:
+        elif our_score < adv_score:
             if self.turn:
                 self.winner = 0
             else:
@@ -223,47 +304,6 @@ class StudentWorld(Agent):
         # Set the opposite barrier to True
         move = self.moves[dir]
         self.chess_board[x + move[0], y + move[1], self.opposites[dir]] = True
-
-    def random_move(self, my_position, adv_position):
-        """
-        ** Reedited version
-        Output:
-        - a random move from the current position
-        """
-        ori_pos = deepcopy(my_position)
-        steps = np.random.randint(0, self.max_step + 1)  # a random number of steps
-
-        # Random Walk
-        for _ in range(steps):
-            my_x, my_y = my_position
-            rand_step = np.random.randint(0, 4)
-            rand_step_x, rand_step_y = self.moves[rand_step]
-            my_position = (my_x + rand_step_x, my_y + rand_step_y)
-
-            # Special Case enclosed by Adversary
-            k = 0
-            # If there's a wall or there's an adversary at the new place, change step
-            while self.chess_board[my_x, my_y, rand_step] or my_position == adv_position:
-                k += 1
-                # terminating condition
-                if k > 300:
-                    break
-                rand_step = np.random.randint(0, 4)
-                rand_step_x, rand_step_y = self.moves[rand_step]
-                my_pos = (my_x + rand_step_x, my_y + rand_step_y)
-
-            if k > 300:
-                my_pos = ori_pos
-                break
-
-        # Put Barrier
-        rand_wall = np.random.randint(0, 4)
-        my_x, my_y = my_position
-        while self.chess_board[my_x, my_y, rand_wall]:
-            rand_wall = np.random.randint(0, 4)
-
-        return my_position, rand_wall
-
 
 if __name__ == "__main__":
     world = World()
