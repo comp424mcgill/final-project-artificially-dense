@@ -26,102 +26,6 @@ class StudentAgent(Agent):
         }
         self.autoplay = True
 
-    # @staticmethod
-    # def random_move(chess_board, my_position, adv_position, max_step):
-    #     """
-    #     ** Reedited version
-    #     Output:
-    #     - a random move from the current position
-    #     """
-    #     # Moves (Up, Right, Down, Left)
-    #     ori_pos = deepcopy(my_position)
-    #     moves = ((-1, 0), (0, 1), (1, 0), (0, -1))
-    #     steps = np.random.randint(0, max_step + 1)  # a random number of steps
-    #
-    #     # Random Walk
-    #     for _ in range(steps):
-    #         my_x, my_y = my_position
-    #         rand_step = np.random.randint(0, 4)
-    #         rand_step_x, rand_step_y = moves[rand_step]
-    #         my_position = (my_x + rand_step_x, my_y + rand_step_y)
-    #
-    #         # Special Case enclosed by Adversary
-    #         k = 0
-    #         # If there's a wall or there's an adversary at the new place, change step
-    #         while chess_board[my_x, my_y, rand_step] or my_position == adv_position:
-    #             k += 1
-    #             # terminating condition
-    #             if k > 300:
-    #                 break
-    #             rand_step = np.random.randint(0, 4)
-    #             rand_step_x, rand_step_y = moves[rand_step]
-    #             my_pos = (my_x + rand_step_x, my_y + rand_step_y)
-    #
-    #         if k > 300:
-    #             my_pos = ori_pos
-    #             break
-    #
-    #     # Put Barrier
-    #     rand_wall = np.random.randint(0, 4)
-    #     my_x, my_y = my_position
-    #     while chess_board[my_x, my_y, rand_wall]:
-    #         rand_wall = np.random.randint(0, 4)
-    #
-    #     return my_position, rand_wall
-    #
-    # @staticmethod
-    # def set_barrier(chess_board, x, y, dir):
-    #     # Set the barrier to True
-    #     chess_board[x, y, dir] = True
-    #     # Set the opposite barrier to True
-    #     moves = ((-1, 0), (0, 1), (1, 0), (0, -1))
-    #     move = moves[dir]
-    #     chess_board[x + move[0], y + move[1], self.opposites[dir]] = True
-    #
-    # @staticmethod
-    # def step(chess_board, my_pos, adv_pos, max_step):
-    #     """
-    #     Implement the step function of your agent here.
-    #     You can use the following variables to access the chess board:
-    #     - chess_board: a numpy array of shape (x_max, y_max, 4)
-    #     - my_pos: a tuple of (x, y)
-    #     - adv_pos: a tuple of (x, y)
-    #     - max_step: an integer
-    #
-    #     You should return a tuple of ((x, y), dir),
-    #     where (x, y) is the next position of your agent and dir is the direction of the wall
-    #     you want to put on.
-    #
-    #     Please check the sample implementation in agents/random_agent.py or agents/human_agent.py for more details.
-    #     """
-    #
-    #     # number_rand_actions = 1  # can change
-    #     # number_rand_trials = 1  # can change
-    #     #
-    #     # highest_prob = 0
-    #     # highest_prob_action = (0, 0), 0
-    #     #
-    #     # for _ in range(number_rand_actions):
-    #     #     ori_board = deepcopy(chess_board)
-    #     #     ori_pos = deepcopy(my_pos)
-    #     #     sum = 0
-    #     #     (rand_x, rand_y), direction = random_move(ori_board, ori_pos, adv_pos, max_step)
-    #     #     ori_board[rand_x, rand_y, direction] = True
-    #     #     for _ in range(number_rand_trials):
-    #     #         sum += mcts(ori_board, (rand_x, rand_y), adv_pos, max_step - 1)
-    #     #     if sum / number_rand_trials > highest_prob:
-    #     #         highest_prob_action = (rand_x, rand_y), direction
-    #     #
-    #     # return highest_prob_action
-    #     print("hi1")
-    #     exp = StudentWorld(chess_board, my_pos, adv_pos, max_step)
-    #     print("hi2")
-    #     action = exp.step()
-    #     print("hi3")
-    #     print(action)
-    #     print("hi")
-    #     return action
-
     @staticmethod
     def possible_step(chess_board, my_pos, adv_pos):
         """
@@ -188,7 +92,7 @@ class StudentAgent(Agent):
         Output:
         - the difference between the cells appropriated; the highest the better for us, the lowest the better for the opponent
         """
-        print("score guess, my_pos & adv_pos:", my_pos, adv_pos)
+        # print("score guess, my_pos & adv_pos:", my_pos, adv_pos)
         adv_possible_pos = {adv_pos}
         adv_tobe_explore_list = [adv_pos]
         my_possible_pos = {my_pos}
@@ -212,8 +116,8 @@ class StudentAgent(Agent):
                         my_possible_pos |= {s}
                         my_tobe_explore_list += [s]
 
-        print("my possible positions:", my_possible_pos)
-        print("adv possible positions:", adv_possible_pos)
+        # print("my possible positions:", my_possible_pos)
+        # print("adv possible positions:", adv_possible_pos)
         return len(my_possible_pos) - len(adv_possible_pos)
 
     def minimax(self, chess_board, my_pos, adv_pos, max_step, minimax_step=0, minimax_step_max=1):
@@ -224,16 +128,16 @@ class StudentAgent(Agent):
         - minimax_step_max = max depth of minimax tree
         get the board with the max favorable score guess
         """
-        print("---------------------- minimax start: my_pos:", my_pos, "adv_pos:", adv_pos, "minimax_step:", minimax_step)
+        # print("---------------------- minimax start: my_pos:", my_pos, "adv_pos:", adv_pos, "minimax_step:", minimax_step)
         if minimax_step == minimax_step_max:
             if minimax_step % 2 == 0:  # to debug
                 info = self.score_guess(chess_board, my_pos, adv_pos), (0, 0), 0
-                print(info)
-                print("===================== minimax end 1")
+                # print(info)
+                # print("===================== minimax end 1")
                 return info # score, position, direction
             info = self.score_guess(chess_board, adv_pos, my_pos), (0, 0), 0
-            print(info)
-            print("===================== minimax end 2")
+            # print(info)
+            # print("===================== minimax end 2")
             return info
 
         # Get a set of reachable positions within the max step
@@ -244,26 +148,26 @@ class StudentAgent(Agent):
         for pos in possible_pos:
             for dir, new_board in self.possible_board(chess_board, pos):
                 # print(pos, dir, self.minimax(new_board, adv_pos, pos, max_step, minimax_step+1))
-                print("direction:", dir, "position:", pos)
+                # print("direction:", dir, "position:", pos)
                 score, __, __ = self.minimax(new_board, adv_pos, pos, max_step, minimax_step + 1)
                 score_list += [(score, pos, dir)]
 
         if len(score_list) == 0:
             if minimax_step % 2 == 0:  # to debug
                 info = self.score_guess(chess_board, my_pos, adv_pos), (0, 0), 0
-                print(info)
-                print("===================== minimax end 3")
+                # print(info)
+                # print("===================== minimax end 3")
                 return info  # score, position, direction
             info = self.score_guess(chess_board, adv_pos, my_pos), (0, 0), 0
-            print(info)
-            print("===================== minimax end 4")
+            # print(info)
+            # print("===================== minimax end 4")
             return info
 
         # print(minimax_step, [x[0] for x in score_list])
         # print("line 238", score_list)
         # print("line 239", max(score_list))
         # print("line 240", min(score_list))
-        print("===================== minimax end 5")
+        # print("===================== minimax end 5")
         return max(score_list) if minimax_step % 2 == 0 else min(score_list)  # to debug
 
     def step(self, chess_board, my_pos, adv_pos, max_step):
