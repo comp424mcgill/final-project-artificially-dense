@@ -23,6 +23,7 @@ Class student minimax - alpha beta pruning
 Input: From student world class, initialize a world with the given board, our position, opponent position, max step
 Output: In student minimax, run the minimax algorithm on the given board and get the action with the highest utility
 
+--------------------------------------- For report ---------------------------------------
 
 Implementation details (I think you'll understand while reading this, feel free to look at the codes while reading this and add more details if you see any, I've written the general idea, and the wording is very casual):
 Motivation: this is a deterministic game with perfect information where 2 adversarial players are playing against each other. Each player is attempting to maximize their own utility function and minimize the opponent's utility function at the terminal state. It is a zero-sum game. This matches the purpose of Minimax algorithm, thus this has been an algorithm that we attempted and ended up implementing.
