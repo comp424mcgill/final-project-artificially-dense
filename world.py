@@ -349,9 +349,7 @@ class World:
 
         for r in range(self.board_size):
             for c in range(self.board_size):
-                for dir, move in enumerate(
-                    self.moves[1:3]
-                ):  # Only check down and right
+                for dir, move in enumerate(self.moves[1:3]):  # Only check down and right
                     if self.chess_board[r, c, dir + 1]:
                         continue
                     pos_a = find((r, c))

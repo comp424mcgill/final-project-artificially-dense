@@ -1,0 +1,55 @@
+1. Have minimax algorithm implemented with basic heuristic
+1.1 Or mcst?
+1.1.1 Good for large states spaces
+1.1.1 Have some heuristics about what is more likely to be a better move to try out before randomly selecting an action
+(i.e. have representative sample actions)
+2. Think of other heuristics
+
+
+Extra ideas:
+1. Identify the opponent's strategy (most likely minimax, minimax with ab pruning, or mcst by testing for e.g. 3 rounds,
+and use counter strategies
+
+
+Class student agent
+
+calls
+Class student world
+Input: From student agent class, initialize a world with the given board, our position, opponent position, max step
+Output: In this world, run the mcts algorithm on the given board once and get a win or lose value while keeping track of the graph at each iteration
+
+calls
+Class student minimax - alpha beta pruning
+Input: From student world class, initialize a world with the given board, our position, opponent position, max step
+Output: In student minimax, run the minimax algorithm on the given board and get the action with the highest utility
+
+--------------------------------------- For report ---------------------------------------
+
+Implementation details (I think you'll understand while reading this, feel free to look at the codes while reading this and add more details if you see any, I've written the general idea, and the wording is very casual):
+Motivation: this is a deterministic game with perfect information where 2 adversarial players are playing against each other. Each player is attempting to maximize their own utility function and minimize the opponent's utility function at the terminal state. It is a zero-sum game. This matches the purpose of Minimax algorithm, thus this has been an algorithm that we attempted and ended up implementing.
+The idea of the implementation is to use Minimax and apply a heuristic to estimate the more favored move.
+One-step minimax is used (more layers failed). 
+When minimax is applied, we first retrieved the set of possible positions which the player is allowed to reach. This is done through BFS as this minimizes repetitions (of landing on a step that was previously landed) compared to DFS (we implemented DFS originally but this was found to have more repetitions than BFS). Throughout, we had to check whether there is a wall in the direction we are moving, whether there is an opponent standing there, and whether it is within the boundary of the board. If any of these happens, that direction would not be a possible next step.
+For each step which we are allowed to land on, there are at most 4 possible directions which we can place a wall. For each direction which we can place a wall, we generate a board configuration (a possible next state) by taking into account the fact that each wall is shared by 2 neighboring positions.
+For each board configuration, we would apply our heuristic and get a utility value from that heuristic. The heuristic is to run BFS for both players by alternating the player that expands the BFS (since each player take turn in making a move in this game). When a player land on a position, that player appropriates all the possible positions that it could move next (we chose to use the positions instead of making them appropriate the specific location and direction because as long as a player is able to land on a specific position, it is up to that player to decide which direction to place a wall, so the player that appropriates more positions is more at an advantage). A difference between the number of positions that each player can appropriate is computed. The state which favors the current player's appropriation the most is the best next state, i.e. the best next position and direction to be chosen.
+I also considered using number of next possible moves (2 layers) for each player and taking that difference as a decision heuristic, but running a BFS through the entire board would take into account the locations of all walls (as opposed to only the walls that are close to the player), which seems to be a superior strategy.
+
+Notes:
+We didn't use codes from any other sources. All codes were implemented from scratch.
+
+Advantages (among else):
+We are able to identify the best next move, thus our player will highly likely win against a random agent which didn't implement any strategy.
+Saves computational time, guarantees to not exceed the limit of 2 seconds and being forced to do a random walk.
+
+Disadvantages (among else):
+We are only able to make 1 future prediction, so playing against an agent that can predict several predictions ahead would put us at a disadvantage.
+We are not optimizing our algorithm with a more elaborate heuristic. We will likely lose against a player that has taken more strategies into considerations when writing their heuristics.
+
+Other approaches (feel free to add more details that you can think of! note that our final approach is superior to all of them except point 3.):
+1. Original idea is to merge Minimax and MCTS, we found that it is possible to embed shallow minimax searches into MCTS framework (https://link.springer.com/chapter/10.1007/978-3-319-14923-3_4). However, in order to implement MCTS, we need a selection criteria to filter the steps that are more "worth" to explore. This is usually achieved by training the game model. Since we don't have this model, MCTS with pure random explorations will very likely lead to a suboptimal step if the game is played against a minimax player, and eventually lose. Thus, MCTS is not the optimal choice of algorithm for us.
+2. Another idea was to use a pure MCTS in the beginning and choose the best random next step, from which we would run Minimax when there are few steps from the end of game, but the disadvantage of this is 1) we are not sure about how to estimate the best time to switch from MCTS to Minimax, 2) choosing the best random next step that is only optimized at the end of the game is not helpful when playing against a player that is always optimizing their steps (Minimax doesn't help much when it is applied on a random next step), 3) we are not sure if that will allow us to respect the time limit of 2 seconds per decision
+3. Another idea was to start from using Minimax, and apply MCTS on the 2 best next state for each player when alternating during the search process. We attempted but the code failed. If this succeeds, it may lead to a better result since we will be able to make relatively more accurate winning predictions, and it will take into account how the opponent will minimize our utility.
+4. Another idea was to just use MCTS with pure random explorations, but not only this may be computationally expensive, this will also easily lose against a Minimax player if 1 more step is needed to lose and the random next step selected that losing next step as the best next random step.
+
+Future improvements (among else):
+Add MCTS (failed this time), alpha beta pruning (failed this time), find more elaborate heuristics, train better models on which we base the MCTS (takes extensive amount of time), develop some strategies to win the game (for example by using some functions that calculates the relationships between the number of walls, the locations of the wall, by taking advantage of the known info (e.g. start symmetrically with 2K barriers, and knowing that we can make at most floor((M + 1)/2) moves)
